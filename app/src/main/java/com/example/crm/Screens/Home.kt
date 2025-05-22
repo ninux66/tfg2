@@ -335,28 +335,21 @@ fun IconWithText2(icon: ImageVector, text: String) {
 
 fun getUserName(onResult: (String) -> Unit) {
     val user = FirebaseAuth.getInstance().currentUser
-
     if (user != null) {
-        val displayName = user.displayName
-        if (!displayName.isNullOrBlank()) {
-            onResult(displayName)
-        } else {
-            FirebaseFirestore.getInstance().collection("users").document(user.uid)
-                .get()
-                .addOnSuccessListener { doc ->
-                    val nombre = doc.getString("firstName") ?: ""
-                    val apellidos = doc.getString("lastName") ?: ""
-                    val completo = "$nombre $apellidos".trim()
-                    onResult(completo.ifBlank { "Usuario desconocido" })
-                }
-                .addOnFailureListener {
-                    onResult("Usuario desconocido")
-                }
-        }
+        FirebaseFirestore.getInstance().collection("users").document(user.uid)
+            .get()
+            .addOnSuccessListener { doc ->
+                val nombre = doc.getString("firstName") ?: ""
+                val apellidos = doc.getString("lastName") ?: ""
+                val completo = "$nombre $apellidos".trim()
+                onResult(completo.ifBlank { "Usuario desconocido" })
+            }
+            .addOnFailureListener {
+                onResult("Usuario desconocido")
+            }
     } else {
         onResult("Usuario no logueado")
     }
 }
-
 
 

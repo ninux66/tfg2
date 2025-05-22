@@ -56,6 +56,8 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
+import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +65,24 @@ fun Settings(navController: NavHostController) {
 
     val showLogoutDialog = remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val userFullName = remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.let {
+            FirebaseFirestore.getInstance().collection("users").document(user.uid)
+                .get()
+                .addOnSuccessListener { doc ->
+                    val nombre = doc.getString("firstName") ?: ""
+                    val apellido = doc.getString("lastName") ?: ""
+                    userFullName.value = "$nombre $apellido".trim()
+                }
+                .addOnFailureListener {
+                    userFullName.value = "Usuario desconocido"
+                }
+        }
+    }
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -120,11 +140,12 @@ fun Settings(navController: NavHostController) {
             }
 
             Text(
-                text = "John Doe",
+                text = userFullName.value,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
+
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -132,12 +153,12 @@ fun Settings(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                PerfilItem(Icons.Default.Person, "Perfil") {}
-                PerfilItem(Icons.Default.FavoriteBorder, "Favoritos") {}
-                PerfilItem(Icons.Default.CreditCard, "Metodos De Pago") {}
-                PerfilItem(Icons.Default.Lock, "Politica De Privacidad") {}
-                PerfilItem(Icons.Default.Settings, "Ajustes") {}
-                PerfilItem(Icons.Default.HelpOutline, "Ayuda") {}
+                PerfilItem(Icons.Default.Person, "Perfil") {navController.navigate("perfil")}
+                PerfilItem(Icons.Default.FavoriteBorder, "Favoritos") {navController.navigate("Favoritos")}
+                PerfilItem(Icons.Default.CreditCard, "Metodos De Pago") {navController.navigate("MetodosDePago")}
+                PerfilItem(Icons.Default.Lock, "Politica De Privacidad") {navController.navigate("PoliticaDePrivacidad")}
+                PerfilItem(Icons.Default.Settings, "Ajustes") {navController.navigate("Ajustes")}
+                PerfilItem(Icons.Default.HelpOutline, "Ayuda") {navController.navigate("Ayuda")}
                 PerfilItem(Icons.Default.ExitToApp, "Cerrar Sesion") {
                     showLogoutDialog.value = true
                 }
