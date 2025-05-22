@@ -10,7 +10,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.crm.Screens.AgregarDoctor
 import com.example.crm.Screens.Ajustes
+import com.example.crm.Screens.AjustesNotificaciones
 import com.example.crm.Screens.Ayuda
+import com.example.crm.Screens.CambiarContrasena
 import com.example.crm.Screens.DetalleDoctor
 import com.example.crm.Screens.Doctores
 import com.example.crm.Screens.Favoritos
@@ -43,6 +45,8 @@ fun NavigationWrapper(navHostController: NavHostController, doctorViewModel: Doc
         composable("PoliticaDePrivacidad") { PoliticaDePrivacidad(navHostController) }
         composable("Ajustes") { Ajustes(navHostController) }
         composable("Ayuda") { Ayuda(navHostController) }
+        composable("ajustesNotificaciones") { AjustesNotificaciones(navHostController) }
+        composable("CambiarContrasena") { CambiarContrasena(navHostController) }
 
     }
 }
